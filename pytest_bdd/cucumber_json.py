@@ -88,7 +88,7 @@ class LogBDDCucumberJSON(object):
         elif report.failed and step["failed"]:
             result = {"status": "failed", "error_message": self._format_error_message(report) if error_message else ""}
         elif report.skipped:
-            result = {"status": "skipped"}
+            result = {"status": "skipped", "error_message": self._format_error_message(report) if error_message else ""}
         result["duration"] = int(math.floor((10 ** 9) * step["duration"]))  # nanosec
         return result
 
