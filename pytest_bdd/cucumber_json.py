@@ -61,6 +61,20 @@ class LogBDDCucumberJSON(object):
     def append(self, obj):
         self.features[-1].append(obj)
 
+    @staticmethod
+    def _format_error_message(report):
+        result = [force_unicode(report.longrepr)]
+        log_prefix_dict = {
+            report.caplog: 'Captured log',
+            report.capstdout: 'Captured stdout',
+            report.capstderr: 'Captured stderr',
+        }
+        for logtype, prefix in log_prefix_dict.items():
+            if logtype:
+                result.append('{} {} {}'.format('-' * 10, prefix, '-' * 10))
+                result.append(logtype)
+        return '\n'.join(result)
+
     def _get_result(self, step, report, error_message=False):
         """Get scenario test run result.
 
@@ -72,7 +86,7 @@ class LogBDDCucumberJSON(object):
         if report.passed or not step["failed"]:  # ignore setup/teardown
             result = {"status": "passed"}
         elif report.failed and step["failed"]:
-            result = {"status": "failed", "error_message": force_unicode(report.longrepr) if error_message else ""}
+            result = {"status": "failed", "error_message": self._format_error_message(report) if error_message else ""}
         elif report.skipped:
             result = {"status": "skipped"}
         result["duration"] = int(math.floor((10 ** 9) * step["duration"]))  # nanosec
