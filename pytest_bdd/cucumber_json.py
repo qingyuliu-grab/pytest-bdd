@@ -134,6 +134,10 @@ class LogBDDCucumberJSON(object):
             # skip if there isn't a result or scenario has no steps
             return
 
+        if report.outcome == 'rerun':
+            # skip if the result is rerun
+            return
+
         def stepmap(step):
             error_message = False
             if step["failed"] and not scenario.setdefault("failed", False):
